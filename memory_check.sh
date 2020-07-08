@@ -22,5 +22,12 @@
 free
 TOTAL_MEMORY=$( free | grep Mem: | awk '{ print $2 }' )
 #echo $TOTAL_MEMORY
-			
+
+USED_MEMORY=$( free | grep Mem: | awk '{ print $3 }' )
+echo $USED_MEMORY
+
+#input parameters statically set
+critValue=0.9 #critical limit in percentage
+warnValue=0.6 #warning limit
+email="memory@check.com"
 
