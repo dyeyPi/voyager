@@ -1,10 +1,5 @@
 #! /bin/bash
 
-#use hint to determine total_memory
-free
-TOTAL_MEMORY=$( free | grep Mem: | awk '{ print $2 }' )
-#echo $TOTAL_MEMORY
-
 #PSEUDOCODE
 #	I/O	system generated > total memory, used memory
 #		manual input 	> critical threshold, working threshold, email
@@ -23,6 +18,9 @@ TOTAL_MEMORY=$( free | grep Mem: | awk '{ print $2 }' )
 #	 b		case *)	 0   
 #	0	EXIT
 
-	
+#use hint to determine total_memory
+free
+TOTAL_MEMORY=$( free | grep Mem: | awk '{ print $2 }' )
+#echo $TOTAL_MEMORY
 			
 
