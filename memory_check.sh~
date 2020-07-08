@@ -24,6 +24,7 @@ TOTAL_MEMORY=$( free | grep "Mem:" | awk '{ print $2 }' )
 echo $TOTAL_MEMORY
 
 USED_MEMORY=$( free | grep "cache:" | awk '{ print $3 }' ) 
+USED_MEMORY_s=9 #test 10, 9, 6, and 5
 echo $USED_MEMORY
 
 #input parameters statically set
@@ -34,7 +35,39 @@ email="memory@check.com"
 #compute actual threshold limits
 critThreshold=$(echo|awk "{print $critValue*$TOTAL_MEMORY}")
 warnThreshold=$(echo|awk "{print $warnValue*$TOTAL_MEMORY}")
+critThreshold_s=9
+warnThreshold_s=6
 
 #test variables to be used for conditional checks
 echo $critThreshold $warnThreshold $email
+
+function memStat() {
+	if [ "$USED_MEMORY_s" -ge "$critThreshold_s" ]; then
+		exitMessage 2
+	elif [ "$USED_MEMORY_s" -ge "$warnThreshold_s" ]; then
+		exitMessage 1
+	else
+		exitMessage 0
+	fi
+}
+
+function exitMessage() {
+	errorCode=${1}
+	echo $errorCode
+
+	case $errorCode in
+		"2")
+			echo "exit 2, then do *bonus"
+			exit $errorCode;;
+		"1")
+			echo "exit 1, but omit later as *"
+			exit $errorCode;;
+		"*")
+			echo "exit 0"
+			exit $errorCode;;
+	esac
+}
+
+memStat
+
 
