@@ -20,7 +20,21 @@
 
 #use hint to determine total_memory
 free
-TOTAL_MEMORY=$( free | grep Mem: | awk '{ print $2 }' )
-#echo $TOTAL_MEMORY
-			
+TOTAL_MEMORY=$( free | grep "Mem:" | awk '{ print $2 }' )
+echo $TOTAL_MEMORY
+
+USED_MEMORY=$( free | grep "cache:" | awk '{ print $3 }' ) 
+echo $USED_MEMORY
+
+#input parameters statically set
+critValue=0.9 #critical limit in percentage
+warnValue=0.6 #warning limit
+email="memory@check.com"
+
+#compute actual threshold limits
+critThreshold=$(echo|awk "{print $critValue*$TOTAL_MEMORY}")
+warnThreshold=$(echo|awk "{print $warnValue*$TOTAL_MEMORY}")
+
+#test variables to be used for conditional checks
+echo $critThreshold $warnThreshold $email
 
