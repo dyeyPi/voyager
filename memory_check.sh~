@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 #PSEUDOCODE
 #	I/O	system generated > total memory, used memory
@@ -54,15 +54,15 @@ function memStat() {
 function exitMessage() {
 	errorCode=${1}
 	echo $errorCode
-
-	case $errorCode in
-		"2")
+	
+	case "$errorCode" in
+		2)
 			echo "exit 2, then do *bonus"
 			exit $errorCode;;
-		"1")
+		1)
 			echo "exit 1, but omit later as *"
 			exit $errorCode;;
-		"*")
+		*)
 			echo "exit 0"
 			exit $errorCode;;
 	esac
