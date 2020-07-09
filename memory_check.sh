@@ -46,8 +46,10 @@ function memStat() {
 		exitMessage 2
 	elif [ "$USED_MEMORY_s" -ge "$warnThreshold_s" ]; then
 		exitMessage 1
-	else
+	elif [ "USED_MEMORY_s" ]; then
 		exitMessage 0
+	else 
+		exitMessage "uncaught"
 	fi
 }
 
@@ -58,13 +60,14 @@ function exitMessage() {
 	case "$errorCode" in
 		2)
 			echo "exit 2, then do *bonus"
-			exit $errorCode;;
+			exit 2;;
 		1)
-			echo "exit 1, but omit later as *"
-			exit $errorCode;;
-		*)
+			exit 1;;
+		0)
 			echo "exit 0"
-			exit $errorCode;;
+			exit 0;;
+		*)
+			echo "Check format: -w -c -e required"
 	esac
 }
 
