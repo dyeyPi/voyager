@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #PSEUDOCODE
 #	I/O	system generated > total memory, used memory
 #		manual input 	> critical threshold, working threshold, email
@@ -18,38 +17,96 @@
 #	 b		case *)	 0   
 #	0	EXIT
 
-#use hint to determine total_memory
-free
+#getInput() using getopts
+function getInput(){
+
+cInput=""
+wInput=""
+eInput=""
+
+while getopts "c:w:e:" options; do
+		#match -option pattern
+		case "$options" in
+			c) 
+				cInput="$OPTARG";;
+			w)
+				wInput="$OPTARG";;
+			e)
+				eInput="$OPTARG";;
+			\?) 
+				exitMessage "format";;
+		esac
+done
+
+	#check instance of each argument's occurence by length - not null
+	if [ ${#cInput} -gt 0 ] && [ ${#wInput} -gt 0 ] && [ ${#eInput} -gt 0 ]; 
+	then
+
+		#check for validity of each argument
+		if (isNumber $cInput) && (isNumber $wInput) && (isEmail $eInput); 
+		then
+			memStat $cInput $wInput $eInput
+		else
+			exitMessage "format"
+		fi
+	else 
+		exitMessage "format"
+	fi
+}
+
+
+function memStat() {
+
+critValue=$(echo|awk "{print ${1}/100}")
+warnValue=$(echo|awk "{print ${2}/100}")
+email=${3}
+
+#total memory check
 TOTAL_MEMORY=$( free | grep "Mem:" | awk '{ print $2 }' )
-echo $TOTAL_MEMORY
 
-USED_MEMORY=$( free | grep "cache:" | awk '{ print $3 }' ) 
-USED_MEMORY_s=5 #test 10, 9, 6, and 5
-echo $USED_MEMORY
+#used memory check (without buffers)
+USED_MEMORY=$( free | grep "Mem:" | awk '{ print $3 }' ) 
 
-#input parameters statically set
-critValue=0.9 #critical limit in percentage
-warnValue=0.6 #warning limit
-email="memory@check.com"
+#used memory check (including buffers)
+#USED_MEMORY=$( free | grep "cache:" | awk '{ print $3 }' ) 
 
 #compute actual threshold limits
 critThreshold=$(echo|awk "{print $critValue*$TOTAL_MEMORY}")
 warnThreshold=$(echo|awk "{print $warnValue*$TOTAL_MEMORY}")
-critThreshold_s=9
-warnThreshold_s=6
+free
+echo $TOTAL_MEMORY $USED_MEMORY $critThreshold
 
 #test variables to be used for conditional checks
 echo $critThreshold $warnThreshold $email
 
-function memStat() {
-	if [ "$USED_MEMORY_s" -ge "$critThreshold_s" ]; then
+	if (("$USED_MEMORY" >= "$critThreshold")); then
 		exitMessage 2
-	elif [ "$USED_MEMORY_s" -ge "$warnThreshold_s" ]; then
+	elif (( "$USED_MEMORY" >= "$warnThreshold" )); then
 		exitMessage 1
-	elif [ "USED_MEMORY_s" ]; then
+	elif (( "USED_MEMORY" )); then
 		exitMessage 0
 	else 
 		exitMessage "uncaught"
+	fi
+}
+
+function isNumber(){
+	#will check if value is between 0 to 100
+	let "difference = "${1}" - 1"
+	if [ $difference -ge 0 ] && [ $difference -le 99 ]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+function isEmail(){
+	#heuristic check of valid email any@any.com
+	if [[ "${1}" =~ .*\@.*\.com ]]; then
+		echo "hmm"
+		return 0
+	else 
+		return 1
 	fi
 }
 
@@ -58,19 +115,12 @@ function exitMessage() {
 	echo $errorCode
 	
 	case "$errorCode" in
-		2)
-			echo "exit 2, then do *bonus"
-			exit 2;;
-		1)
-			exit 1;;
-		0)
-			echo "exit 0"
-			exit 0;;
-		*)
-			echo "Check format: -w -c -e required"
+		2)	echo "exit 2, then do *bonus";	exit 2;;
+		1)	exit 1;;
+		0)	exit 0;;
+		*)	echo "format: ./memory_check -c 90 -w 60 -e user@network.com"
+			exit;;
 	esac
 }
 
-memStat
-
-
+getInput ${*}
