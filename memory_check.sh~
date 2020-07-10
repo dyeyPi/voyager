@@ -23,24 +23,26 @@ function getInput(){
 	cInput=""
 	wInput=""
 	eInput=""
-
+	argCount=0
 	while getopts "c:w:e:" options; do
 			#match -option pattern
 			case "$options" in
 				c) 
-					cInput="$OPTARG";;
+					cInput="$OPTARG"
+					((argCount+=1));;
 				w)
-					wInput="$OPTARG";;
+					wInput="$OPTARG"
+					((argCount+=1));;
 				e)
-					eInput="$OPTARG";;
+					eInput="$OPTARG"
+					((argCount+=1));;
 				\?) 
 					exitMessage "format";;
 			esac
 	done
-
-	#check instance of each argument's occurence by length - not null
-	if [ ${#cInput} -gt 0 ] && [ ${#wInput} -gt 0 ] && [ ${#eInput} -gt 0 ]; then
-
+	
+	#input check for arguments greater than 3	
+	if [ $argCount -eq 3 ]; then
 		#check for validity of each argument
 		if (isNumber $cInput) && (isNumber $wInput) && (isEmail $eInput); then
 			#check if critical is greater than warning
@@ -114,10 +116,10 @@ function isEmail(){
 #can be discarded for optimization purposes
 function exitMessage() {
 	errorCode=${1}
-	echo $errorCode
+	#echo $errorCode
 	
 	case "$errorCode" in
-		2)	echo "exit 2, then do *bonus";	exit 2;;
+		2)	echo "exit 2, then do *bonus"	exit 2;;
 		1)	exit 1;;
 		0)	exit 0;;
 		format)	
