@@ -39,12 +39,10 @@ while getopts "c:w:e:" options; do
 done
 
 	#check instance of each argument's occurence by length - not null
-	if [ ${#cInput} -gt 0 ] && [ ${#wInput} -gt 0 ] && [ ${#eInput} -gt 0 ]; 
-	then
+	if [ ${#cInput} -gt 0 ] && [ ${#wInput} -gt 0 ] && [ ${#eInput} -gt 0 ]; then
 
 		#check for validity of each argument
-		if (isNumber $cInput) && (isNumber $wInput) && (isEmail $eInput); 
-		then
+		if (isNumber $cInput) && (isNumber $wInput) && (isEmail $eInput); then
 			memStat $cInput $wInput $eInput
 		else
 			exitMessage "format"
@@ -92,8 +90,9 @@ echo $critThreshold $warnThreshold $email
 
 function isNumber(){
 	#will check if value is between 0 to 100
-	let "difference = "${1}" - 1"
-	if [ $difference -ge 0 ] && [ $difference -le 99 ]; then
+	let "difference = ${1} - 1"
+	if [ $difference -ge -1 ] && [ $difference -le 99 ]; then
+		#echo "got ur number"
 		return 0
 	else
 		return 1
@@ -101,15 +100,16 @@ function isNumber(){
 }
 
 function isEmail(){
-	#heuristic check of valid email any@any.com
+	#heuristic check of valid email any@any.com	
 	if [[ "${1}" =~ .*\@.*\.com ]]; then
-		echo "hmm"
+		#echo "got ur email"
 		return 0
 	else 
 		return 1
 	fi
 }
 
+#can be discarded for optimization purposes
 function exitMessage() {
 	errorCode=${1}
 	echo $errorCode
