@@ -20,23 +20,23 @@
 #getInput() using getopts
 function getInput(){
 
-cInput=""
-wInput=""
-eInput=""
+	cInput=""
+	wInput=""
+	eInput=""
 
-while getopts "c:w:e:" options; do
-		#match -option pattern
-		case "$options" in
-			c) 
-				cInput="$OPTARG";;
-			w)
-				wInput="$OPTARG";;
-			e)
-				eInput="$OPTARG";;
-			\?) 
-				exitMessage "format";;
-		esac
-done
+	while getopts "c:w:e:" options; do
+			#match -option pattern
+			case "$options" in
+				c) 
+					cInput="$OPTARG";;
+				w)
+					wInput="$OPTARG";;
+				e)
+					eInput="$OPTARG";;
+				\?) 
+					exitMessage "format";;
+			esac
+	done
 
 	#check instance of each argument's occurence by length - not null
 	if [ ${#cInput} -gt 0 ] && [ ${#wInput} -gt 0 ] && [ ${#eInput} -gt 0 ]; then
@@ -55,37 +55,34 @@ done
 
 function memStat() {
 
-critValue=$(echo|awk "{print ${1}/100}")
-warnValue=$(echo|awk "{print ${2}/100}")
-email=${3}
+	critValue=$(echo "scale=1; ${1}/100" | bc)
+	warnValue=$(echo "scale=1; ${2}/100" | bc)
+	email=${3}
 
-#total memory check
-TOTAL_MEMORY=$( free | grep "Mem:" | awk '{ print $2 }' )
+	#total memory check
+	TOTAL_MEMORY=$( free | grep "Mem:" | awk '{ print $2 }' )
 
-#used memory check (without buffers)
-USED_MEMORY=$( free | grep "Mem:" | awk '{ print $3 }' ) 
+	#used memory check (without buffers)
+	USED_MEMORY=$( free | grep "Mem:" | awk '{ print $3 }' ) 
 
-#used memory check (including buffers)
-#USED_MEMORY=$( free | grep "cache:" | awk '{ print $3 }' ) 
+	#used memory check (including buffers)
+	#USED_MEMORY=$( free | grep "cache:" | awk "{ print $3 }" ) 
 
-#compute actual threshold limits
-critThreshold=$(echo|awk "{print $critValue*$TOTAL_MEMORY}")
-warnThreshold=$(echo|awk "{print $warnValue*$TOTAL_MEMORY}")
-free
-echo $TOTAL_MEMORY $USED_MEMORY $critThreshold
+	#compute actual threshold limits
+	critThreshold=$(echo "scale=1; $critValue*$TOTAL_MEMORY" | bc)
+	warnThreshold=$(echo "scale=1; $warnValue*$TOTAL_MEMORY" | bc)
 
-#test variables to be used for conditional checks
-echo $critThreshold $warnThreshold $email
-
-	if (("$USED_MEMORY" >= "$critThreshold")); then
+echo $TOTAL_MEMORY $USED_MEMORY $critValue $critThreshold
+	#test variables to be used for conditional checks
+	if [ $USED_MEMORY -ge ${critThreshold%.*} ]; then
 		exitMessage 2
-	elif (( "$USED_MEMORY" >= "$warnThreshold" )); then
+	elif [ $USED_MEMORY -ge ${warnThreshold%.*} ]; then
 		exitMessage 1
 	elif (( "USED_MEMORY" )); then
 		exitMessage 0
 	else 
 		exitMessage "uncaught"
-	fi
+	fi	
 }
 
 function isNumber(){
@@ -118,7 +115,11 @@ function exitMessage() {
 		2)	echo "exit 2, then do *bonus";	exit 2;;
 		1)	exit 1;;
 		0)	exit 0;;
-		*)	echo "format: ./memory_check -c 90 -w 60 -e user@network.com"
+		format)	
+			echo "format: ./memory_check -c 90 -w 60 -e user@network.com"
+			exit;;
+		*)
+			echo "uncaught"
 			exit;;
 	esac
 }
