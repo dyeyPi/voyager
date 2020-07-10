@@ -43,7 +43,12 @@ function getInput(){
 
 		#check for validity of each argument
 		if (isNumber $cInput) && (isNumber $wInput) && (isEmail $eInput); then
-			memStat $cInput $wInput $eInput
+			#check if critical is greater than warning
+			if [ $cInput -gt $wInput ]; then
+				memStat $cInput $wInput $eInput
+			else
+				exitMessage "format"
+			fi
 		else
 			exitMessage "format"
 		fi
