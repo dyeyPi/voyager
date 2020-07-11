@@ -119,14 +119,13 @@ function exitMessage() {
 	#echo $errorCode
 	
 	case "$errorCode" in
-		2)	echo "exit 2, then do *bonus";	exit 2;;
+		2)	exit 2;;
 		1)	exit 1;;
 		0)	exit 0;;
 		format)	
 			echo "format: ./memory_check -c 90 -w 60 -e user@network.com"
 			exit;;
 		*)
-			echo "uncaught"
 			exit;;
 	esac
 }
