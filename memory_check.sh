@@ -114,14 +114,14 @@ function isEmail(){
 }
 
 function sendReport() {
-	echo "$( ps aux | sort -k4 -r | head | awk '{print $2"\t"$4}')"
+	echo "$( ps aux | sort -k4 -r | head | awk '{print $2"\t"$4}')" > critLog
 }
 
 #can be discarded for optimization purposes
 function exitMessage() {
 	errorCode=${1}
 	#echo $errorCode
-	sendReport	
+
 	case "$errorCode" in
 		2)	sendReport;	exit 2;;
 		1)	exit 1;;
