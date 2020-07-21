@@ -79,7 +79,7 @@ function memStat() {
 	critThreshold=$(echo "scale=1; $critValue*$TOTAL_MEMORY" | bc)
 	warnThreshold=$(echo "scale=1; $warnValue*$TOTAL_MEMORY" | bc)
 
-echo $TOTAL_MEMORY $USED_MEMORY $critValue $critThreshold
+        #echo $TOTAL_MEMORY $USED_MEMORY $critValue $critThreshold
 	#test variables to be used for conditional checks
 	if [ $USED_MEMORY -ge ${critThreshold%.*} ]; then
 		exitMessage 2
