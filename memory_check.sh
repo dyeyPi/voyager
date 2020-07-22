@@ -82,7 +82,7 @@ function memStat() {
         #echo $TOTAL_MEMORY $USED_MEMORY $critValue $critThreshold
 	#test variables to be used for conditional checks
 	if [ $USED_MEMORY -ge ${critThreshold%.*} ]; then
-		exitMessage 2
+		exitMessage 2 $email
 	elif [ $USED_MEMORY -ge ${warnThreshold%.*} ]; then
 		exitMessage 1
 	elif (( "USED_MEMORY" )); then
@@ -114,7 +114,10 @@ function isEmail(){
 }
 
 function sendReport() {
+	email=${1}
 	echo "$( ps aux | sort -k4 -r | head | awk '{print $2"\t"$4}')" > critLog
+	mailx -s "Memory check report" -a ./critLog $email
+	exit 2
 }
 
 #can be discarded for optimization purposes
@@ -123,7 +126,7 @@ function exitMessage() {
 	#echo $errorCode
 
 	case "$errorCode" in
-		2)	sendReport;	exit 2;;
+		2)	sendReport ${2};;
 		1)	exit 1;;
 		0)	exit 0;;
 		format)	
